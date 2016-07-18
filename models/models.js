@@ -27,6 +27,23 @@ var pokemon = new mongoose.Schema({
   }
 });
 
+var user = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  team: {
+    type: String,
+    enum: ['yellow', 'blue', 'red'],
+    required: true
+  }
+});
+
 module.exports = {
-  Pokemon: mongoose.model('Pokemon', pokemon)
+  Pokemon: mongoose.model('Pokemon', pokemon),
+  User: mongoose.model('User', user)
 }
