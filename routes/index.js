@@ -1,8 +1,9 @@
-
 var bcrypt = require('bcrypt');
 var express = require('express');
 var models = require('../models/models');
 var User = models.User;
+var Post = models.Post;
+var Message = models.Message;
 var _ = require('underscore');
 
 module.exports = function (passport) {
@@ -30,7 +31,7 @@ var router = express.Router();
         console.log("hash error", err);
         // Store hash in your password DB.
         params.password = hash;
-        models.User.create(params, function(err, user) {
+        User.create(params, function(err, user) {
           if (err) {
             console.log(err);
             res.status(400).json({
@@ -72,6 +73,18 @@ var router = express.Router();
     res.json({
       success: true,
       user: user
+    });
+  });
+
+  router.post('/post', function(req, res, next) {
+    new Post({
+      user: req.user,
+      pokemon: req.body.pokemon,
+      time: new Date(),
+      timeout: new Date().getTime() + (30 * 60 * 1000),
+    }).save(function(err,post) {
+      if (err) return next(err);
+      res.json(post)
     });
   });
 
