@@ -1,9 +1,8 @@
 
 var bcrypt = require('bcrypt');
 var express = require('express');
-var models = require('./models');
+var models = require('../models/models');
 var User = models.User;
-var Message = models.Message;
 var _ = require('underscore');
 
 module.exports = function (passport) {
@@ -28,10 +27,12 @@ var router = express.Router();
     var params = _.pick(req.body, ['username', 'password', 'team']);
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(params.password, salt, function(err, hash) {
+        console.log("hash error", err);
         // Store hash in your password DB.
         params.password = hash;
         models.User.create(params, function(err, user) {
           if (err) {
+            console.log(err);
             res.status(400).json({
               success: false,
               error: err.message

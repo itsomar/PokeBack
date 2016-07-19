@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
-
+var findOrCreate = require('mongoose-findorcreate');
 // Step 0: Remember to add your MongoDB information in one of the following ways!
-var connect = process.env.MONGODB_URI
-mongoose.connect(connect);
 
 //do we need this new??
 var pokemon = new mongoose.Schema({
@@ -28,7 +26,7 @@ var pokemon = new mongoose.Schema({
 });
 
 var user = new mongoose.Schema({
-  name: {
+  username: {
     type: String,
     required: true
   },
@@ -38,10 +36,11 @@ var user = new mongoose.Schema({
   },
   team: {
     type: String,
-    enum: ['yellow', 'blue', 'red'],
-    required: true
+    enum: ['Noteam', 'Mystic', 'Instinct', 'Valor']
   }
 });
+
+user.plugin(findOrCreate)
 
 module.exports = {
   Pokemon: mongoose.model('Pokemon', pokemon),

@@ -10,9 +10,10 @@ var LocalStrategy = require('passport-local');
 var util = require('util');
 var flash = require('connect-flash');
 var bcrypt = require('bcrypt');
-// var FacebookStrategy = require('passport-facebook');
+var routes = require('./routes/index');
 
-var models = require('./models');
+
+var models = require('./models/models');
 var User = models.User;
 var routes = require('./routes');
 
@@ -90,7 +91,7 @@ passport.use(new LocalStrategy(function(username, password, done) {
   });
 }));
 
-app.use(routes(passport));
+app.use('/', routes(passport))
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
