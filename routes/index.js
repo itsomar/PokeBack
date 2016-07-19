@@ -27,11 +27,13 @@ var router = express.Router();
   router.post('/register', function(req, res, next) {
     var params = _.pick(req.body, ['username', 'password', 'team']);
     bcrypt.genSalt(10, function(err, salt) {
+      console.log("salt err", err);
       bcrypt.hash(params.password, salt, function(err, hash) {
         console.log("hash error", err);
         // Store hash in your password DB.
         params.password = hash;
         User.create(params, function(err, user) {
+          console.log("user err", err)
           if (err) {
             console.log(err);
             res.status(400).json({
