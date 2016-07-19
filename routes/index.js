@@ -25,7 +25,7 @@ var router = express.Router();
   }));
 
   router.post('/register', function(req, res, next) {
-    var params = _.pick(req.body, ['username', 'password']);
+    var params = _.pick(req.body, ['username', 'password', 'team']);
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(params.password, salt, function(err, hash) {
         // Store hash in your password DB.

@@ -18,8 +18,7 @@ var routes = require('./routes');
 
 // Make sure we have all required env vars. If these are missing it can lead
 // to confusing, unpredictable errors later.
-var REQUIRED_ENV = ['SECRET', 'MONGODB_URI'];
-REQUIRED_ENV.forEach(function(el) {
+['SECRET', 'MONGODB_URI'].forEach(function(el) {
   if (!process.env[el])
     throw new Error("Missing required env var " + el);
 });
