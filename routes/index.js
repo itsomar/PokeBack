@@ -1,8 +1,8 @@
-
 var bcrypt = require('bcrypt');
 var express = require('express');
-var models = require('./models');
+var models = require('../models');
 var User = models.User;
+var Post = models.Post;
 var Message = models.Message;
 var _ = require('underscore');
 
@@ -30,7 +30,7 @@ var router = express.Router();
       bcrypt.hash(params.password, salt, function(err, hash) {
         // Store hash in your password DB.
         params.password = hash;
-        models.User.create(params, function(err, user) {
+        User.create(params, function(err, user) {
           if (err) {
             res.status(400).json({
               success: false,
@@ -71,6 +71,22 @@ var router = express.Router();
     res.json({
       success: true,
       user: user
+    });
+  });
+
+  router.post('/post', function(req, res, next) {
+    new Post({
+      user: req.user,
+      pokemon: req.body.pokemon,
+      location: {
+        latitude: ,
+        longitude: 
+      },
+      time: new Date(),
+      timeout: new Date().getTime() + (30 * 60 * 1000),
+    }).save(function(err,post) {
+      if (err) return next(err);
+      res.json(post)
     });
   });
 

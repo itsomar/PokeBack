@@ -43,7 +43,37 @@ var user = new mongoose.Schema({
   }
 });
 
+var post = new mongoose.Schema({
+  user: {
+    type: mongoose.Types.Schema.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  pokemon: {
+    type: mongoose.Types.Schema.ObjectId,
+    ref: 'Pokemon',
+    required: true
+  },
+  location: {
+    latitude: String,
+    longitude: String
+  },
+  time: {
+    type: String,
+    required: true
+  },
+  timeout: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number,
+    default: 0
+  }
+})
+
 module.exports = {
   Pokemon: mongoose.model('Pokemon', pokemon),
-  User: mongoose.model('User', user)
+  User: mongoose.model('User', user),
+  Post: mongoose.model('Post', postn)
 }
