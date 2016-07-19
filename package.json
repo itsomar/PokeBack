@@ -16,10 +16,7 @@
     "express-session": "^1.14.0",
     "jade": "~1.11.0",
     "mongoose": "^4.5.5",
-<<<<<<< HEAD
     "mongoose-findorcreate": "^0.1.2",
-=======
->>>>>>> 277c3f3b6e04de5cdd33ed75ccff1ccc1b39f5cc
     "morgan": "~1.6.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
