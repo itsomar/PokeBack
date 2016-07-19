@@ -1,6 +1,6 @@
 var bcrypt = require('bcrypt');
 var express = require('express');
-var models = require('../models');
+var models = require('../models/models');
 var User = models.User;
 var Post = models.Post;
 var Message = models.Message;
@@ -78,10 +78,6 @@ var router = express.Router();
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
-      location: {
-        latitude: ,
-        longitude: 
-      },
       time: new Date(),
       timeout: new Date().getTime() + (30 * 60 * 1000),
     }).save(function(err,post) {

@@ -12,7 +12,7 @@ var flash = require('connect-flash');
 var bcrypt = require('bcrypt');
 // var FacebookStrategy = require('passport-facebook');
 
-var models = require('./models');
+var models = require('./models/models');
 var User = models.User;
 var routes = require('./routes');
 
@@ -36,7 +36,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.createConnection(process.env.MONGODB_URI);
 var mongoStore = new MongoStore({mongooseConnection: mongoose.connection});
 app.use(session({
   secret: process.env.SECRET || 'fake secret',

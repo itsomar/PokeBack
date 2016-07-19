@@ -45,13 +45,12 @@ var user = new mongoose.Schema({
 
 var post = new mongoose.Schema({
   user: {
-    type: mongoose.Types.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   pokemon: {
-    type: mongoose.Types.Schema.ObjectId,
-    ref: 'Pokemon',
+    type: String,
     required: true
   },
   location: {
@@ -75,5 +74,5 @@ var post = new mongoose.Schema({
 module.exports = {
   Pokemon: mongoose.model('Pokemon', pokemon),
   User: mongoose.model('User', user),
-  Post: mongoose.model('Post', postn)
+  Post: mongoose.model('Post', post)
 }
