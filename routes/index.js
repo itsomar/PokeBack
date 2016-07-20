@@ -3,7 +3,7 @@ var express = require('express');
 var models = require('../models/models');
 var User = models.User;
 var Post = models.Post;
-var Message = models.Message;
+var Pokemon = models.Pokemon;
 var _ = require('underscore');
 
 module.exports = function (passport) {
@@ -101,6 +101,18 @@ var router = express.Router();
       res.json({
         success: true,
         feed: posts
+      });
+    });
+  });
+
+  router.get('/pokemon', function(req, res, next) {
+    Pokemon.find()
+           .sort({number: 1})
+           .exec(function(err, pokemons) {
+      if (err) return next(err);
+      res.json({
+        success: true,
+        pokemon: pokemons
       });
     });
   });
