@@ -15,8 +15,7 @@ var models = require('./models/models');
 var User = models.User;
 var routes = require('./routes');
 
-// Make sure we have all required env vars. If these are missing it can lead
-// to confusing, unpredictable errors later.
+// Make sure we have all required env vars// to confusing, unpredictable errors later.
 ['SECRET', 'MONGODB_URI'].forEach(function(el) {
   if (!process.env[el])
     throw new Error("Missing required env var " + el);
@@ -24,6 +23,18 @@ var routes = require('./routes');
 
 var app = express();
 var IS_DEV = app.get('env') === 'development';
+
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+var socket_routes = require('./routes/socket')
+
+// io.on('connection', socket_routes);
+
+io.on('connection', function(socket) {
+  console.log("Setting up socket handlers");
+  socket.emit('update', 'lol');
+})
 
 if (IS_DEV) {
   mongoose.set('debug', true);

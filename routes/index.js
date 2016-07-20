@@ -90,5 +90,16 @@ var router = express.Router();
     });
   });
 
+  router.get('/feed', function(req, res, next) {
+    // Post.getRecent(function(err, posts) {
+    Post.find((err, posts) => {
+      if (err) return next(err);
+      res.json({
+        success: true,
+        feed: posts
+      });
+    });
+  });
+
   return router;
 };
