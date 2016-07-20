@@ -27,11 +27,13 @@ var router = express.Router();
   router.post('/register', function(req, res, next) {
     var params = _.pick(req.body, ['username', 'password', 'team']);
     bcrypt.genSalt(10, function(err, salt) {
+      console.log("salt err", err);
       bcrypt.hash(params.password, salt, function(err, hash) {
         console.log("hash error", err);
         // Store hash in your password DB.
         params.password = hash;
         User.create(params, function(err, user) {
+          console.log("user err", err)
           if (err) {
             console.log(err);
             res.status(400).json({
@@ -81,10 +83,25 @@ var router = express.Router();
       user: req.user,
       pokemon: req.body.pokemon,
       time: new Date(),
+      location: {
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
+      },
       timeout: new Date().getTime() + (30 * 60 * 1000),
     }).save(function(err,post) {
       if (err) return next(err);
       res.json(post)
+    });
+  });
+
+  router.get('/feed', function(req, res, next) {
+    // Post.getRecent(function(err, posts) {
+    Post.find((err, posts) => {
+      if (err) return next(err);
+      res.json({
+        success: true,
+        feed: posts
+      });
     });
   });
 
