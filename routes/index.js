@@ -83,6 +83,10 @@ var router = express.Router();
       user: req.user,
       pokemon: req.body.pokemon,
       time: new Date(),
+      location: {
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
+      },
       timeout: new Date().getTime() + (30 * 60 * 1000),
     }).save(function(err,post) {
       if (err) return next(err);
