@@ -79,7 +79,6 @@ var router = express.Router();
   });
 
   router.post('/post', function(req, res, next) {
-    console.log('trying to create a new post...');
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
@@ -88,6 +87,17 @@ var router = express.Router();
     }).save(function(err,post) {
       if (err) return next(err);
       res.json(post)
+    });
+  });
+
+  router.get('/feed', function(req, res, next) {
+    // Post.getRecent(function(err, posts) {
+    Post.find((err, posts) => {
+      if (err) return next(err);
+      res.json({
+        success: true,
+        feed: posts
+      });
     });
   });
 

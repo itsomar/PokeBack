@@ -57,11 +57,11 @@ var post = new mongoose.Schema({
     longitude: String
   },
   time: {
-    type: String,
+    type: Date,
     required: true
   },
   timeout: {
-    type: String,
+    type: Number,
     required: true
   },
   rating: {
@@ -69,6 +69,15 @@ var post = new mongoose.Schema({
     default: 0
   }
 })
+
+post.methods.getRecent = function(cb) {
+  // this.sort(timeout).find({
+  //   $gt: { timeout: new Date().getTime() }
+  // }).exec(cb);
+  this.find({timeout: {$gt: Date.now()}})
+      .sort({timeout: -1})
+      .exec(cb)
+}
 
 module.exports = {
   Pokemon: mongoose.model('Pokemon', pokemon),

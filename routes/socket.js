@@ -1,13 +1,10 @@
 
-module.exports = function(io) {
+module.exports = function(socket) {
   console.log("Importing sockets file");
 
-  io.on('connection', function (socket) {
     console.log('connected');
 
     socket.emit('update', 'lol');
 
-  });
-
-  return io;
+  return socket;
 }

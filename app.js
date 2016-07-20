@@ -27,7 +27,14 @@ var IS_DEV = app.get('env') === 'development';
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-require('./routes/socket')(io);
+var socket_routes = require('./routes/socket')
+
+// io.on('connection', socket_routes);
+
+io.on('connection', function(socket) {
+  console.log("Setting up socket handlers");
+  socket.emit('update', 'lol');
+})
 
 if (IS_DEV) {
   mongoose.set('debug', true);
