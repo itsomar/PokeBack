@@ -36,7 +36,8 @@ var user = new mongoose.Schema({
   },
   team: {
     type: String,
-    enum: ['Noteam', 'Mystic', 'Instinct', 'Valor']
+    enum: ['Noteam', 'Mystic', 'Instinct', 'Valor'],
+    required: true
   }
 });
 
