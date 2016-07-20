@@ -79,6 +79,7 @@ var router = express.Router();
   });
 
   router.post('/post', function(req, res, next) {
+    console.log('trying to create a new post...');
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
