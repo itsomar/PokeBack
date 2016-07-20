@@ -3,7 +3,6 @@ var express = require('express');
 var models = require('../models/models');
 var User = models.User;
 var Post = models.Post;
-var Message = models.Message;
 var _ = require('underscore');
 
 module.exports = function (passport) {
