@@ -96,11 +96,7 @@ var router = express.Router();
   });
 
   router.get('/feed', function(req, res, next) {
-    // Post.getRecent(function(err, posts) {
-    // Post.find((err, posts) => {
-    Post.find()
-        .populate("user")
-        .exec(function(err, posts) {
+    Post.getRecent(function(err, posts) {
       if (err) return next(err);
       res.json({
         success: true,

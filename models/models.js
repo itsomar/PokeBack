@@ -71,12 +71,11 @@ var post = new mongoose.Schema({
   }
 })
 
-post.methods.getRecent = function(cb) {
-  // this.sort(timeout).find({
-  //   $gt: { timeout: new Date().getTime() }
-  // }).exec(cb);
-  this.find({timeout: {$gt: Date.now()}})
-      .sort({timeout: -1})
+post.statics.getRecent = function(cb) {
+  this.model('Post').find({timeout: {$gt: Date.now()}})
+      .sort({timeout: 1})
+      .populate('user')
+      // .limit LATER
       .exec(cb)
 }
 
