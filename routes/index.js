@@ -107,7 +107,7 @@ var router = express.Router();
 
   router.get('/pokemon', function(req, res, next) {
     Pokemon.find()
-           .sort({number: 1})
+           .sort({name: 1})
            .exec(function(err, pokemons) {
       if (err) return next(err);
       res.json({
