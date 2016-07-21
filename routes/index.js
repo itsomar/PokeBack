@@ -117,5 +117,15 @@ var router = express.Router();
     });
   });
 
+  router.get('/pokemon/:name', function(req, res, next) {
+    Pokemon.findOne({name: req.params.name}, function(err, pokemon) {
+      if (err) return next(err);
+      res.json({
+        success: true,
+        pokemon: pokemon
+      });
+    });
+  });
+
   return router;
 };
