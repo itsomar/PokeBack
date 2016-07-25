@@ -28,13 +28,13 @@ var router = express.Router();
 
   router.post('/register', function(req, res, next) {
     if (!req.body.username || !req.body.password || !req.body.confirm) {
-      res.json({
+      return res.json({
         success: false,
         error: 'Missing fields'
       })
     }
     if (req.body.password !== req.body.confirm) {
-      res.json({
+      return res.json({
         success: false,
         error: 'Passwords do not match'
       })
