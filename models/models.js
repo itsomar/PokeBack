@@ -33,12 +33,12 @@ var user = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  team: {
+    type: String,
+    enum: ['Noteam', 'Mystic', 'Instinct', 'Valor'],
+    required: true
   }
-  // team: {
-  //   type: String,
-  //   enum: ['Noteam', 'Mystic', 'Instinct', 'Valor'],
-  //   required: true
-  // }
 });
 
 user.plugin(findOrCreate)
