@@ -73,14 +73,52 @@ var post = new mongoose.Schema({
 
 post.statics.getRecent = function(cb) {
   this.model('Post').find({timeout: {$gt: Date.now()}})
+      .lean()
       .sort({timeout: 1})
       .populate('user')
       // .limit LATER
       .exec(cb)
 }
 
+post.methods.getRating = function(cb) {
+  this.model('Rating').find({post: this._id}, function(err, ratings) {
+    if (err) return cb(err, null)
+    if (ratings) {
+      var rating = ratings.reduce(function(prevNumber, currRating) {
+        var num = (currRating.type === 'down') ? -1 : 1
+        return prevNumber + num;
+      }, 0)
+      return cb(err, rating);
+    }
+  });
+}
+
+var rating = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['up', 'down'],
+    required: true
+  }
+})
+
 module.exports = {
   Pokemon: mongoose.model('Pokemon', pokemon),
   User: mongoose.model('User', user),
-  Post: mongoose.model('Post', post)
+  Post: mongoose.model('Post', post),
+  Rating: mongoose.model('Rating', rating)
 }

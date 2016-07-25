@@ -3,6 +3,7 @@ var express = require('express');
 var models = require('../models/models');
 var User = models.User;
 var Post = models.Post;
+var Rating = models.Rating;
 var Pokemon = models.Pokemon;
 
 var _ = require('underscore');
@@ -95,13 +96,120 @@ var router = express.Router();
     });
   });
 
+  router.post('/post/:id', function(req, res, next) {
+    Post.findById(req.params.id, function(err, post) {
+      Rating.findOne({
+        user: req.user._id,
+        post: req.params.id}, function(err, r) {
+          if (err) {
+            console.log(err);
+            return res.status(400).json({
+              success: false,
+              message: err
+            });
+          }
+          // if user has voted
+          if (r) {
+            if (req.body.vote !== r.type) {
+              // switch rating
+              if (r.type === 'up') {
+                r.type = 'down'
+                post.rating -= 2;
+              } else if (r.type === 'down') {
+                r.type = 'up';
+                post.rating += 2;
+              }
+              r.save(function(err, r) {
+                if (err) {
+                  console.log(err);
+                  return res.status(400).json({
+                    success: false,
+                    message: err
+                  });
+                }
+                post.save(function(err, p) {
+                    return res.json({
+                      success: true,
+                      rating: p.rating
+                    })
+                  })
+                })
+              } else {
+                // delete rating
+                Rating.remove({ _id: r._id}, function(err) {
+                  if (err) {
+                    console.log(err);
+                    return res.status(400).json({
+                      success: false,
+                      message: err
+                    });
+                  }
+
+                  if (r.type === 'up') {
+                    post.rating -= 1;
+                  } else {
+                    post.rating += 1;
+                  }
+                  post.save(function(err, p) {
+                      return res.json({
+                        success: true,
+                        rating: p.rating
+                    })
+                  })
+                })
+              }
+            } else {
+              // if have not voted, create new rating
+              var rating = new Rating({
+                post: req.params.id,
+                user: req.user._id,
+                type: req.body.vote
+              })
+              rating.save(function(err, r) {
+                if (err) {
+                  console.log(err);
+                  return res.status(400).json({
+                    success: false,
+                    message: err
+                  });
+                }
+                if (r.type === 'up') {
+                  post.rating += 1;
+                } else {
+                  post.rating -= 1;
+                }
+                post.save(function(err) {
+                  if (err) return next(err);
+                  res.json({
+                    success: true,
+                    rating: post.rating
+                  })
+                })
+              })
+            }
+          })
+        })
+      })
+
   router.get('/feed', function(req, res, next) {
     Post.getRecent(function(err, posts) {
       if (err) return next(err);
-      res.json({
-        success: true,
-        feed: posts
-      });
+      posts.map(function(post, i) {
+        Rating.findOne({ post: post._id, user: req.user._id }, function(err, r) {
+          if (r) {
+            post.vote = r.type;
+          }
+          if (i === posts.length - 1) {
+            console.log(posts);
+            res.json({
+              success: true,
+              feed: posts
+            });
+          }
+          return post
+        })
+      })
+      
     });
   });
 
