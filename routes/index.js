@@ -27,6 +27,18 @@ var router = express.Router();
   }));
 
   router.post('/register', function(req, res, next) {
+    // if (!req.body.username || !req.body.password || !req.body.confirm) {
+    //   return res.json({
+    //     success: false,
+    //     error: 'Missing fields'
+    //   })
+    // }
+    // if (req.body.password !== req.body.confirm) {
+    //   return res.json({
+    //     success: false,
+    //     error: 'Passwords do not match'
+    //   })
+    // }
     var params = _.pick(req.body, ['username', 'password', 'team']);
     bcrypt.genSalt(10, function(err, salt) {
       console.log("salt err", err);
@@ -40,7 +52,7 @@ var router = express.Router();
             console.log(err);
             res.status(400).json({
               success: false,
-              error: err.message
+              error: 'Username is taken'
             });
           } else {
             res.json({
