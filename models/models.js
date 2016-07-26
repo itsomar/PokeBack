@@ -53,10 +53,7 @@ var post = new mongoose.Schema({
     type: String,
     required: true
   },
-  location: {
-    latitude: String,
-    longitude: String
-  },
+  geo: {type: [Number], index: '2d'},
   time: {
     type: Date,
     required: true
@@ -78,6 +75,20 @@ post.statics.getRecent = function(cb) {
       .populate('user')
       // .limit LATER
       .exec(cb)
+}
+
+post.statics.findNearRecent = function(coords , cb) {
+  console.log("coords", coords)
+  return this.model('Post')
+      .find({
+        timeout: {$gt: Date.now()},
+        geo: { $nearSphere: coords, $maxDistance: 0.001}
+      })
+      .lean()
+      .populate('user')
+      .sort({timeout: 1})
+      // .limit LATER
+      .exec(cb);
 }
 
 post.methods.getRating = function(cb) {

@@ -85,10 +85,7 @@ var router = express.Router();
       user: req.user,
       pokemon: req.body.pokemon,
       time: new Date(),
-      location: {
-        latitude: req.body.latitude,
-        longitude: req.body.longitude
-      },
+      geo: [req.body.longitude,req.body.latitude],
       timeout: new Date().getTime() + (30 * 60 * 1000),
     }).save(function(err,post) {
       if (err) return next(err);
@@ -192,9 +189,13 @@ var router = express.Router();
       })
 
   router.get('/feed', function(req, res, next) {
-    Post.getRecent(function(err, posts) {
+    var coord = [parseFloat(req.query.longitude),parseFloat(req.query.latitude)]
+    Post.findNearRecent(coord, function(err, posts) {
       if (err) return next(err);
       posts.map(function(post, i) {
+        post.location = {}
+        post.location.latitude = post.geo[1];
+        post.location.longitude = post.geo[0];
         Rating.findOne({ post: post._id, user: req.user._id }, function(err, r) {
           if (r) {
             post.vote = r.type;
@@ -209,8 +210,9 @@ var router = express.Router();
           return post
         })
       })
-      
-    });
+
+    })
+    ;
   });
 
   router.get('/pokemon', function(req, res, next) {
