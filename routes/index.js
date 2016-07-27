@@ -1,6 +1,9 @@
 var bcrypt = require('bcrypt');
 var express = require('express');
 var models = require('../models/models');
+// const api = require('pokemon-go-api');
+    // "pokemon-go-api": "0.0.11",
+
 var User = models.User;
 var Post = models.Post;
 var Rating = models.Rating;
@@ -12,6 +15,53 @@ module.exports = function (passport) {
 var router = express.Router();
 
   /* Authentication routes */
+
+//   router.get('/pokemonGoApi', function(req, res) {
+//     // const username = 'username';
+//     // const password = 'password';
+//     //
+//     //
+//     // const provider = 'google';
+//     // const location = 'Pennsylvania';
+//     //
+//     // // main code
+//     // api.login(username, password, provider)
+//     //   .then(function() {
+//     //     console.log("SECOND");
+//     //     console.log("THIRD");
+//     //     return api.location.set('address', location)
+//     //       .then(api.getPlayerEndpoint);
+//     //   })
+//     //   .then(api.profile.get)
+//     //   .then(function(profile) {
+//     //     console.log('success', profile);
+//     //   })
+//     //   .catch(function(error) {
+//     //     console.log('error', error.stack);
+//     //   });
+//
+//
+//
+//     const username = '';
+//     const password = '';
+//
+//     const provider = 'google';
+//
+// // main code
+//     api.login(username, password, provider)
+//       .then(api.getPlayerEndpoint)
+//       .then(_.partial(api.mapData.getByCoordinates, 39.955469, -75.196910))
+//       .then(function(data) {
+//         console.log('success', data);
+//       })
+//       .catch(function(error) {
+//         console.log('error', error.stack);
+//       });
+//
+//
+//       res.send("DOPE!")
+//     })
+
 
   router.get('/login/failure', function(req, res) {
     res.status(401).json({
