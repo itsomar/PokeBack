@@ -299,5 +299,15 @@ var router = express.Router();
     });
   });
 
+  router.get('/user', function(req, res, next) {
+    User.findById(req.user._id, function(err, user) {
+      if (err) return next(err);
+      res.json({
+        success: true,
+        user: user
+      });
+    });
+  });
+
   return router;
 };
