@@ -50,8 +50,7 @@ var gympost = new mongoose.Schema({
     required: true
   },
   message: {
-    type: String,
-    required: true
+    type: String
   },
   geo: {type: [Number], index: '2d'},
   time: {
