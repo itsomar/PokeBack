@@ -1,8 +1,12 @@
 var bcrypt = require('bcrypt');
 var express = require('express');
 var models = require('../models/models');
+// const api = require('pokemon-go-api');
+    // "pokemon-go-api": "0.0.11",
+
 var User = models.User;
 var Post = models.Post;
+var Gympost = models.Gympost;
 var Rating = models.Rating;
 var Pokemon = models.Pokemon;
 
@@ -12,6 +16,53 @@ module.exports = function (passport) {
 var router = express.Router();
 
   /* Authentication routes */
+
+//   router.get('/pokemonGoApi', function(req, res) {
+//     // const username = 'username';
+//     // const password = 'password';
+//     //
+//     //
+//     // const provider = 'google';
+//     // const location = 'Pennsylvania';
+//     //
+//     // // main code
+//     // api.login(username, password, provider)
+//     //   .then(function() {
+//     //     console.log("SECOND");
+//     //     console.log("THIRD");
+//     //     return api.location.set('address', location)
+//     //       .then(api.getPlayerEndpoint);
+//     //   })
+//     //   .then(api.profile.get)
+//     //   .then(function(profile) {
+//     //     console.log('success', profile);
+//     //   })
+//     //   .catch(function(error) {
+//     //     console.log('error', error.stack);
+//     //   });
+//
+//
+//
+//     const username = '';
+//     const password = '';
+//
+//     const provider = 'google';
+//
+// // main code
+//     api.login(username, password, provider)
+//       .then(api.getPlayerEndpoint)
+//       .then(_.partial(api.mapData.getByCoordinates, 39.955469, -75.196910))
+//       .then(function(data) {
+//         console.log('success', data);
+//       })
+//       .catch(function(error) {
+//         console.log('error', error.stack);
+//       });
+//
+//
+//       res.send("DOPE!")
+//     })
+
 
   router.get('/login/failure', function(req, res) {
     res.status(401).json({
@@ -99,6 +150,19 @@ var router = express.Router();
       time: new Date(),
       geo: [req.body.longitude,req.body.latitude],
       timeout: new Date().getTime() + (30 * 60 * 1000),
+    }).save(function(err,post) {
+      if (err) return next(err);
+      res.json(post)
+    });
+  });
+
+  router.post('/gympost', function(req, res, next) {
+    new Gympost({
+      user: req.user,
+      message: req.body.message,
+      time: new Date(),
+      geo: [req.body.longitude,req.body.latitude],
+      timeout: new Date().getTime() + (15 * 60 * 1000),
     }).save(function(err,post) {
       if (err) return next(err);
       res.json(post)
@@ -225,6 +289,27 @@ var router = express.Router();
 
     })
     ;
+  });
+
+  router.get('/gymfeed', function(req, res, next) {
+    var coord = [parseFloat(req.query.longitude),parseFloat(req.query.latitude)]
+    Gympost.findNearRecent(coord, function(err, posts) {
+      console.log("LOOK POSTS", posts)
+      if (err) return next(err);
+      posts.map(function(post, i) {
+        post.location = {}
+        post.location.latitude = post.geo[1];
+        post.location.longitude = post.geo[0];
+        if (i === posts.length - 1) {
+          console.log("LOGGING", posts);
+          res.json({
+            success: true,
+            feed: posts
+          });
+        }
+        return post
+      })
+    })
   });
 
   router.get('/pokemon', function(req, res, next) {
