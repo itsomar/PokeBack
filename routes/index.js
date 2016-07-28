@@ -6,6 +6,7 @@ var models = require('../models/models');
 
 var User = models.User;
 var Post = models.Post;
+var Gympost = models.Gympost;
 var Rating = models.Rating;
 var Pokemon = models.Pokemon;
 
@@ -155,6 +156,19 @@ var router = express.Router();
     });
   });
 
+  router.post('/gympost', function(req, res, next) {
+    new Gympost({
+      user: req.user,
+      message: req.body.message,
+      time: new Date(),
+      geo: [req.body.longitude,req.body.latitude],
+      timeout: new Date().getTime() + (15 * 60 * 1000),
+    }).save(function(err,post) {
+      if (err) return next(err);
+      res.json(post)
+    });
+  });
+
   router.post('/post/:id', function(req, res, next) {
     Post.findById(req.params.id, function(err, post) {
       Rating.findOne({
@@ -275,6 +289,27 @@ var router = express.Router();
 
     })
     ;
+  });
+
+  router.get('/gymfeed', function(req, res, next) {
+    var coord = [parseFloat(req.query.longitude),parseFloat(req.query.latitude)]
+    Gympost.findNearRecent(coord, function(err, posts) {
+      console.log("LOOK POSTS", posts)
+      if (err) return next(err);
+      posts.map(function(post, i) {
+        post.location = {}
+        post.location.latitude = post.geo[1];
+        post.location.longitude = post.geo[0];
+        if (i === posts.length - 1) {
+          console.log("LOGGING", posts);
+          res.json({
+            success: true,
+            feed: posts
+          });
+        }
+        return post
+      })
+    })
   });
 
   router.get('/pokemon', function(req, res, next) {

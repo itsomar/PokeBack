@@ -43,6 +43,50 @@ var user = new mongoose.Schema({
 
 user.plugin(findOrCreate)
 
+var gympost = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  message: {
+    type: String,
+    required: true
+  },
+  geo: {type: [Number], index: '2d'},
+  time: {
+    type: Date,
+    required: true
+  },
+  timeout: {
+    type: Number,
+    required: true
+  }
+})
+
+gympost.statics.getRecent = function(cb) {
+  this.model('Gympost').find({timeout: {$gt: Date.now()}})
+      .lean()
+      .sort({timeout: 1})
+      .populate('user')
+      // .limit LATER
+      .exec(cb)
+}
+
+gympost.statics.findNearRecent = function(coords , cb) {
+  console.log("coords", coords)
+  return this.model('Gympost')
+      .find({
+        timeout: {$gt: Date.now()},
+        geo: { $nearSphere: coords, $maxDistance: 0.001}
+      })
+      .lean()
+      .populate('user')
+      .sort({timeout: 1})
+      // .limit LATER
+      .exec(cb);
+}
+
 var post = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -131,5 +175,6 @@ module.exports = {
   Pokemon: mongoose.model('Pokemon', pokemon),
   User: mongoose.model('User', user),
   Post: mongoose.model('Post', post),
+  Gympost: mongoose.model('Gympost', gympost),
   Rating: mongoose.model('Rating', rating)
 }
