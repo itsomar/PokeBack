@@ -108,7 +108,7 @@ var router = express.Router();
                       error: 'Select a Team'
                     });
                 }
-             else{    
+             else{
               console.log(err);
               res.status(400).json({
                 success: false,
@@ -170,10 +170,14 @@ var router = express.Router();
   });
 
   router.post('/gympost', function(req, res, next) {
+    console.log("USERBROOO", req.user)
+    console.log("USER TEAM BROOOO", req.user.team)
+
     new Gympost({
       user: req.user,
       message: req.body.message,
       time: new Date(),
+      team: req.user.team,
       geo: [req.body.longitude,req.body.latitude],
       timeout: new Date().getTime() + (15 * 60 * 1000),
     }).save(function(err,post) {
