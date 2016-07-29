@@ -108,6 +108,13 @@ var router = express.Router();
                       error: 'Select a Team'
                     });
                 }
+                else if (req.body.password.length  < 4){
+                   console.log(err);
+                    res.status(400).json({
+                      success: false,
+                      error: 'Password must be atleast 4 characters long'
+                    });
+                }
              else{    
               console.log(err);
               res.status(400).json({
