@@ -162,7 +162,10 @@ var router = express.Router();
       timeout: new Date().getTime() + (30 * 60 * 1000),
     }).save(function(err,post) {
       if (err) return next(err);
-      res.json(post)
+      res.json({
+        success: true,
+        post: post
+      })
     });
   });
 
@@ -275,6 +278,7 @@ var router = express.Router();
       })
 
   router.get('/feed', function(req, res, next) {
+    // console.log('[HOW MANY TIMES AM I GETTING REQUESTS?????????]')
     var coord = [parseFloat(req.query.longitude),parseFloat(req.query.latitude)]
     Post.findNearRecent(coord, function(err, posts) {
       if (err) return next(err);
