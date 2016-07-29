@@ -90,6 +90,7 @@ var router = express.Router();
     //     error: 'Passwords do not match'
     //   })
     // }
+
     var params = _.pick(req.body, ['username', 'password', 'team']);
     bcrypt.genSalt(10, function(err, salt) {
       console.log("salt err", err);
@@ -100,11 +101,20 @@ var router = express.Router();
         User.create(params, function(err, user) {
           console.log("user err", err)
           if (err) {
-            console.log(err);
-            res.status(400).json({
-              success: false,
-              error: 'Username is taken'
-            });
+                if (req.body.team === ''){
+                   console.log(err);
+                    res.status(400).json({
+                      success: false,
+                      error: 'Select a Team'
+                    });
+                }
+             else{    
+              console.log(err);
+              res.status(400).json({
+                success: false,
+                error: 'Username is taken'
+              });
+            }
           } else {
             res.json({
               success: true,
