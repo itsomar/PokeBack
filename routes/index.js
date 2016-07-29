@@ -100,7 +100,7 @@ var router = express.Router();
         params.password = hash;
         User.create(params, function(err, user) {
           console.log("user err", err)
-          if (err) {
+          if (!!err) {
                 if (req.body.team === ''){
                    console.log(err);
                     res.status(400).json({
