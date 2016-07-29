@@ -105,7 +105,14 @@ var router = express.Router();
                    err = true;
                    }
 
-          if (err) {
+            User.findOne({ username: req.body.username }, function (err, user) {
+                // if there's an error, finish trying to authenticate (auth failed)
+                if (user) {
+                  console.error(err);
+                 err = true;
+                }
+
+               if (err) {
                 if (req.body.team === ''){
                    console.log(err);
                     res.status(400).json({
@@ -133,6 +140,13 @@ var router = express.Router();
               user: user
             });
           }
+
+
+
+
+              })
+
+
         });
       });
     });
