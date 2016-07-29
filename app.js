@@ -83,14 +83,14 @@ passport.use(new LocalStrategy(function(username, password, done) {
     // if no user present, auth failed
     if (!user) {
       console.log(user);
-      done(null, false, { message: 'Incorrect username.' });
+      done(null, false, { message: 'Incorrect Username' });
       return;
     }
     // if passwords do not match, auth failed
     bcrypt.compare(password, user.password, function(err, res) {
       // res == true
       if (!res) {
-        done(null, false, { message: 'Incorrect password.' });
+        done(null, false, { message: 'Incorrect Password' });
         return;
       }
       // auth has has succeeded
