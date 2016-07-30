@@ -91,62 +91,56 @@ var router = express.Router();
     //   })
     // }
 
-    var params = _.pick(req.body, ['username', 'password', 'team']);
+    var params = _.pick(req.body, ['username', 'password', 'repassword', 'team']);
+    if (params.team === ''){
+        return res.status(400).json({
+          success: false,
+          error: 'Select a Team'
+        });
+    }
+    if (params.password.length  < 4){
+        return res.status(400).json({
+          success: false,
+          error: 'Password must be at least 4 characters long'
+        });
+    }
+    if (!params.username){
+      return res.status(400).json({
+          success: false,
+          error: 'Enter a username'
+      })
+    }
+    if (params.password !== params.repassword){
+      return res.status(400).json({
+        success: false,
+        error: 'Passwords do not match'
+      })
+    }
     bcrypt.genSalt(10, function(err, salt) {
       console.log("salt err", err);
       bcrypt.hash(params.password, salt, function(err, hash) {
         console.log("hash error", err);
         // Store hash in your password DB.
         params.password = hash;
-        User.create(params, function(err, user) {
-          console.log("user err", err)
-
-          if (req.body.password.length  < 4){
-                   err = true;
-                   }
-
-            User.findOne({ username: req.body.username }, function (err, user) {
+        console.log("user err", err)
                 // if there's an error, finish trying to authenticate (auth failed)
-                if (user) {
-                  console.error(err);
-                 err = true;
-                }
-
-               if (err) {
-                if (req.body.team === ''){
-                   console.log(err);
-                    res.status(400).json({
-                      success: false,
-                      error: 'Select a Team'
-                    });
-                }
-                else if (req.body.password.length  < 4){
-                   console.log(err);
-                    res.status(400).json({
-                      success: false,
-                      error: 'Password must be atleast 4 characters long'
-                    });
-                }
-             else{
-              console.log(err);
-              res.status(400).json({
-                success: false,
-                error: 'Username is taken'
-              });
-            }
-          } else {
-            res.json({
-              success: true,
-              user: user
-            });
+        new User({
+          username: params.username,
+          password: params.password,
+          team: params.team
+        }).save(function(error, user){
+          if(error){
+            return res.status(400).json({
+              success: false,
+              error: "Username already exists"
+            })
           }
-
-
-
-
+            else{
+              return res.json({
+                success: true,
+                user: user
               })
-
-
+            }
         });
       });
     });
