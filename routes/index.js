@@ -166,6 +166,7 @@ var router = express.Router();
   });
 
   router.post('/post', function(req, res, next) {
+    console.log("Attempting to post " + req.body.pokemon + " from " + req.user.username);
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
@@ -173,6 +174,7 @@ var router = express.Router();
       geo: [req.body.longitude,req.body.latitude],
       timeout: new Date().getTime() + (30 * 60 * 1000),
     }).save(function(err,post) {
+      console.log("Saving attempted: ", err, post);
       if (err) return next(err);
       res.json({
         success: true,
@@ -298,6 +300,7 @@ var router = express.Router();
     var coord = [parseFloat(req.query.longitude),parseFloat(req.query.latitude)]
     Post.findNearRecent(coord, function(err, posts) {
       if (err) return next(err);
+      if (posts.length === 0) return res.json({success: true, feed: []});
       posts.map(function(post, i) {
         post.location = {}
         post.location.latitude = post.geo[1];
@@ -326,6 +329,7 @@ var router = express.Router();
     Gympost.findNearRecent(coord, function(err, posts) {
       console.log("LOOK POSTS", posts)
       if (err) return next(err);
+      if (posts.length === 0) return res.json({success: true, feed: []});
       posts.map(function(post, i) {
         post.location = {}
         post.location.latitude = post.geo[1];
@@ -357,6 +361,7 @@ var router = express.Router();
   router.get('/pokemon/:name', function(req, res, next) {
     Pokemon.findOne({name: req.params.name}, function(err, pokemon) {
       if (err) return next(err);
+      if (pokemon === null) return res.json({success: true, feed: []});
       res.json({
         success: true,
         pokemon: pokemon
