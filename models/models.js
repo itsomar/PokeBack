@@ -39,7 +39,10 @@ var user = new mongoose.Schema({
     type: String,
     enum: ['Noteam', 'Mystic', 'Instinct', 'Valor'],
     required: true
-  }
+  },
+  notif: [{
+    type: String  
+  }]
 });
 
 user.plugin(findOrCreate)

@@ -208,6 +208,20 @@ var router = express.Router();
     });
   });
 
+  router.post('/notif', function(req, res) {
+    User.findByIdAndUpdate(req.user._id, {$push: {notif: req.body.pokemon}},function(err, user) {
+      if(err) {
+        return next(err)
+      }
+      else {
+        res.json({
+          success: true,
+          notif: user.notif
+        })
+      }
+    })
+  })
+
   router.post('/post/:id', function(req, res, next) {
     Post.findById(req.params.id, function(err, post) {
       Rating.findOne({
