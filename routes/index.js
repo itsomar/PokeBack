@@ -188,7 +188,6 @@ var router = express.Router();
   });
 
   router.post('/post', function(req, res, next) {
-    console.log("Attempting to post " + req.body.pokemon + " from " + req.user.username);
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
@@ -206,6 +205,7 @@ var router = express.Router();
   });
 
   router.post('/gympost', function(req, res, next) {
+<<<<<<< HEAD
     console.log("USERBROOO", req.user)
     console.log("USER TEAM BROOOO", req.user.team)
     console.log(new Date().getTime());
@@ -229,6 +229,10 @@ var router = express.Router();
     // })
 
     new Notification({
+=======
+    new Gympost({
+      user: req.user,
+>>>>>>> master
       message: req.body.message,
       team: req.user.team,
       timeout: new Date().getTime() + 58732
@@ -248,6 +252,46 @@ var router = express.Router();
     })
     // res.sendStatus(200)
     
+  });
+
+  router.post('/notif', function(req, res) {
+    User.findByIdAndUpdate(req.user._id, {$push: {notif: req.body.pokemon}},function(err, user) {
+      if(err) {
+        return next(err)
+      }
+      else {
+        res.json({
+          success: true,
+          notif: user.notif
+        })
+      }
+    })
+  })
+
+  router.get('/post/:id', function(req, res, next) {
+    console.log('DID I MAKE IT HERE MANGG')
+    Rating.findOne({user: req.user._id, post: req.params.id}, function(err, rating){
+      if (err) return next(err);
+      if (rating) {
+        console.log('[RATING]', rating)
+        if (rating.type === 'up') {
+          res.json({
+            success: true,
+            rating: 'up'
+          });
+        } else {
+          res.json({
+            success: true,
+            rating: 'down'
+          });
+        } 
+      } else {
+        res.json({
+          success: false,
+          rating: 'none'
+        });
+      }
+    });
   });
 
   router.post('/post/:id', function(req, res, next) {
