@@ -9,6 +9,7 @@ var Post = models.Post;
 var Gympost = models.Gympost;
 var Rating = models.Rating;
 var Pokemon = models.Pokemon;
+var Notification = models.Notification;
 
 var _ = require('underscore');
 
@@ -157,6 +158,19 @@ var router = express.Router();
       next();
     }
   });
+
+  router.get('/notifications', function(req, res){
+    Notification.remove({timeout:  {$lt: new Date().getTime()}}, function(err) {
+      console.log("err", err)
+      Notification.find({team: req.user.team}, function(err, notification){
+        res.json({
+          success: true,
+          notifications: notification
+          })
+      })
+    });
+  });
+
   router.get('/logout', function(req, res) {
     req.logout();
     res.json({
@@ -194,18 +208,46 @@ var router = express.Router();
   router.post('/gympost', function(req, res, next) {
     console.log("USERBROOO", req.user)
     console.log("USER TEAM BROOOO", req.user.team)
+    console.log(new Date().getTime());
 
-    new Gympost({
-      user: req.user,
+      
+    //   for(var count = 0; count < notification.length; count = count + 1){
+
+    //   console.log("length: " + notification.length);
+    //   console.log("count: " + count);
+    //   // console.log("notification: " + notification[count].timeout);
+    //   // console.log(new Date().getTime())
+    //   // console.log("below");
+    //   if(notification[count].timeout < new Date().getTime())
+    //     {
+    //       console.log('hi')
+    //       notification[count].remove();
+    //       count --; 
+    //     }
+        
+    //   }
+    // })
+
+    new Notification({
       message: req.body.message,
-      time: new Date(),
       team: req.user.team,
-      geo: [req.body.longitude,req.body.latitude],
-      timeout: new Date().getTime() + (15 * 60 * 1000),
-    }).save(function(err,post) {
-      if (err) return next(err);
-      res.json(post)
-    });
+      timeout: new Date().getTime() + 58732
+    }).save(function(error, notification){
+      if(error) return next(error);
+      new Gympost({
+        user: req.user,
+        message: req.body.message,
+        time: new Date(),
+        team: req.user.team,
+        geo: [req.body.longitude,req.body.latitude],
+        timeout: new Date().getTime() + (15 * 60 * 1000),
+      }).save(function(err,post) {
+        if (err) return next(err);
+        res.json(post)
+      });
+    })
+    // res.sendStatus(200)
+    
   });
 
   router.post('/post/:id', function(req, res, next) {

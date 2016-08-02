@@ -44,6 +44,21 @@ var user = new mongoose.Schema({
 
 user.plugin(findOrCreate)
 
+var notification = new mongoose.Schema({
+  team: {
+    type: String,
+    required: true
+  },
+  timeout: {
+    type: Number,
+    required: true
+  },
+  message: {
+    type: String,
+    required: true
+  }
+})
+
 var gympost = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -180,5 +195,6 @@ module.exports = {
   User: mongoose.model('User', user),
   Post: mongoose.model('Post', post),
   Gympost: mongoose.model('Gympost', gympost),
-  Rating: mongoose.model('Rating', rating)
+  Rating: mongoose.model('Rating', rating),
+  Notification: mongoose.model('Notification', notification)
 }
