@@ -1,5 +1,8 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'start',
+1 verbose cli   '--reset-cache' ]
 2 info using npm@3.10.3
 3 info using node@v6.3.1
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
@@ -25,7 +28,7 @@
 15 verbose pkgid PokeBack@0.0.0
 16 verbose cwd /Users/christophermak/Desktop/PokeBack
 17 error Darwin 15.6.0
-18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
+18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start" "--reset-cache"
 19 error node v6.3.1
 20 error npm  v3.10.3
 21 error code ELIFECYCLE

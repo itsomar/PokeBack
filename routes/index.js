@@ -205,7 +205,6 @@ var router = express.Router();
   });
 
   router.post('/gympost', function(req, res, next) {
-<<<<<<< HEAD
     console.log("USERBROOO", req.user)
     console.log("USER TEAM BROOOO", req.user.team)
     console.log(new Date().getTime());
@@ -229,10 +228,6 @@ var router = express.Router();
     // })
 
     new Notification({
-=======
-    new Gympost({
-      user: req.user,
->>>>>>> master
       message: req.body.message,
       team: req.user.team,
       timeout: new Date().getTime() + 58732
