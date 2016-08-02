@@ -167,9 +167,11 @@ var router = express.Router();
 
   router.get('/login/success', function(req, res) {
     var user = _.pick(req.user, 'username', '_id');
+    console.log("NOTIFFF", req.user.notif);
     res.json({
       success: true,
-      user: user
+      user: user,
+      notif: req.user.notif
     });
   });
 
@@ -209,18 +211,23 @@ var router = express.Router();
   });
 
   router.post('/notif', function(req, res) {
-    User.findByIdAndUpdate(req.user._id, {$push: {notif: req.body.pokemon}},function(err, user) {
-      if(err) {
-        return next(err)
+    console.log("RE USER NOT", req.user.notif);
+      for(var i = 0; i < req.user.notif.length; i++) {
+        console.log("INSIDE FOR LOOP GEORGE");
+        if(req.body.pokemon === req.user.notif[i]) {
+          return res.json({
+            success: false
+          })
+        }
       }
-      else {
+     req.user.notif = req.user.notif.concat(req.body.pokemon)
+      req.user.save(function(err, user) {
         res.json({
           success: true,
           notif: user.notif
         })
-      }
+      })
     })
-  })
 
   router.post('/post/:id', function(req, res, next) {
     Post.findById(req.params.id, function(err, post) {
