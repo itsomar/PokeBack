@@ -174,7 +174,6 @@ var router = express.Router();
   });
 
   router.post('/post', function(req, res, next) {
-    console.log("Attempting to post " + req.body.pokemon + " from " + req.user.username);
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
@@ -192,9 +191,6 @@ var router = express.Router();
   });
 
   router.post('/gympost', function(req, res, next) {
-    console.log("USERBROOO", req.user)
-    console.log("USER TEAM BROOOO", req.user.team)
-
     new Gympost({
       user: req.user,
       message: req.body.message,
@@ -221,6 +217,32 @@ var router = express.Router();
       }
     })
   })
+
+  router.get('/post/:id', function(req, res, next) {
+    console.log('DID I MAKE IT HERE MANGG')
+    Rating.findOne({user: req.user._id, post: req.params.id}, function(err, rating){
+      if (err) return next(err);
+      if (rating) {
+        console.log('[RATING]', rating)
+        if (rating.type === 'up') {
+          res.json({
+            success: true,
+            rating: 'up'
+          });
+        } else {
+          res.json({
+            success: true,
+            rating: 'down'
+          });
+        } 
+      } else {
+        res.json({
+          success: false,
+          rating: 'none'
+        });
+      }
+    });
+  });
 
   router.post('/post/:id', function(req, res, next) {
     Post.findById(req.params.id, function(err, post) {
