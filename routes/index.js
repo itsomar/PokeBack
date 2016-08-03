@@ -315,7 +315,7 @@ var router = express.Router();
 
   router.post('/background', function(req, res, next) {
     console.log("Updating user location", req.body);
-    req.user.geo = [parseFloat(req.body.location.longitude), parseFloat(req.body.location.latitude)];
+    req.user.geo = [parseFloat(req.body.location.coords.longitude), parseFloat(req.body.location.coords.latitude)];
     req.user.save()
       .then(user => {
         res.send(user);
@@ -328,7 +328,7 @@ var router = express.Router();
             $in: req.user.notif
           },
           geo: { 
-            $nearSphere: [req.body.location.longitude, req.body.location.latitude],
+            $nearSphere: [req.body.location.coords.longitude, req.body.location.coords.latitude],
             $maxDistance: 0.001
           },
         });
