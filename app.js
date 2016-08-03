@@ -21,6 +21,31 @@ var routes = require('./routes');
     throw new Error("Missing required env var " + el);
 });
 
+const exec = require('child_process').exec;
+
+var ParseServer = require('parse-server').ParseServer;
+var api = new ParseServer({
+  databaseURI: process.env.MONGODB_URI,
+  appId: 'PokeParse',
+  masterKey: process.env.SECRET,
+  serverURL: 'http://localhost:' + (process.env.PORT || 3000) + '/parse',
+  push: {
+    ios: {
+      pfx: path.join(__dirname, 'Certificates.p12'),
+      passphrase: '',
+      bundleId: 'com.horizons.PokegameDitto',
+      production: false
+    }
+  }
+});
+
+exec('parse-dashboard --appId PokeParse --masterKey ' 
+    + process.env.SECRET + ' --serverURL "http://localhost:' 
+    + (process.env.PORT || 3000) + '/parse" --appName Ditto', (err, stdout, stderr) => {
+      if (err) return console.error(`Failed to start Parse Dashboard process: ${err}`);
+      console.log("Started Parse Dashboard, ready.");
+})
+
 var app = express();
 var IS_DEV = app.get('env') === 'development';
 
@@ -45,6 +70,7 @@ app.use(logger(IS_DEV ? 'dev' : 'combined'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/parse', api);
 
 mongoose.connect(process.env.MONGODB_URI);
 var mongoStore = new MongoStore({mongooseConnection: mongoose.connection});
