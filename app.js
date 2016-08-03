@@ -26,7 +26,7 @@ var IS_DEV = app.get('env') === 'development';
 
 var certPath = path.join(__dirname, 'Certificates.p12');
 if (!IS_DEV) {
-  certPath = path.join('/tmp' + 'Certificates.p12');
+  certPath = path.join('/tmp', 'Certificates.p12');
   require('fs').writeFile(certPath, new Buffer(process.env.CERT, 'base64'), (err) => {
     if (err) throw new Error("Unable to write Certificates file", err);
     console.log("Certificates file written.");
