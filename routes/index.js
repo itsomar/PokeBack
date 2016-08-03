@@ -240,6 +240,7 @@ var router = express.Router();
         }
       });
     }).then(users => {
+        if (users.length === 0) return;
         return Parse.Push.send({
           channels: users.map(user => user.username),
           data: {
@@ -313,8 +314,7 @@ var router = express.Router();
 
   router.post('/background', function(req, res, next) {
     console.log("Updating user location", req.body);
-    req.user.latitude = req.body.latitude;
-    req.user.longitude = req.body.longitude;
+    req.user.geo = [parseFloat(req.body.longitude), parseFloat(req.body.latitude)];
     req.user.save()
       .then(user => res.send(user))
       .then(() => {
