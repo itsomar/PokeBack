@@ -238,8 +238,9 @@ var router = express.Router();
         notif: {
           $elemMatch: req.body.pokemon
         }
-      });
+      }).elemMatch("");
     }).then(users => {
+        console.log("NEARBY USERS DETECTED", users);
         if (users.length === 0) return;
         return Parse.Push.send({
           channels: users.map(user => user.username),
@@ -329,6 +330,7 @@ var router = express.Router();
         });
       })
       .then(posts => {
+        console.log("NEARBY POSTS DETECTED", posts);
         posts.forEach(post => {
           Parse.Push.send({
             channels: req.user.username,
