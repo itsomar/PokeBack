@@ -177,12 +177,14 @@ var router = express.Router();
 
   router.post('/post', function(req, res, next) {
     console.log("Attempting to post " + req.body.pokemon + " from " + req.user.username);
+    console.log("POKEMON OBJECTTTT", req.body.pokemonObject);
     new Post({
       user: req.user,
       pokemon: req.body.pokemon,
+      pokemonObject: req.body.pokemonObject._id,
       time: new Date(),
       geo: [req.body.longitude,req.body.latitude],
-      timeout: new Date().getTime() + (30 * 60 * 1000),
+      timeout: new Date().getTime() + (30 * 60 * 1000)
     }).save(function(err,post) {
       console.log("Saving attempted: ", err, post);
       if (err) return next(err);
@@ -325,12 +327,18 @@ var router = express.Router();
       })
 
   router.get('/feed', function(req, res, next) {
-    // console.log('[HOW MANY TIMES AM I GETTING REQUESTS?????????]')
+    console.log('[INSIDE FEEDGHIBB]')
     var coord = [parseFloat(req.query.longitude),parseFloat(req.query.latitude)]
+    req.user.latitude = req.query.latitude
+    req.user.longitude = req.query.longitude
     Post.findNearRecent(coord, function(err, posts) {
+      console.log('[INSIDE GEORGEEE]')
+      console.log("ERRRRRRR", err);
       if (err) return next(err);
-      if (posts.length === 0) return res.json({success: true, feed: []});
+      if (posts.length === 0) {return res.json({success: true, feed: []})}
+      console.log('[INSIDE IF STTEMME')
       posts.map(function(post, i) {
+        console.log("INSIDE MAP");
         post.location = {}
         post.location.latitude = post.geo[1];
         post.location.longitude = post.geo[0];

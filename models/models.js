@@ -41,7 +41,7 @@ var user = new mongoose.Schema({
     required: true
   },
   notif: [{
-    type: String  
+    type: String
   }]
 });
 
@@ -104,6 +104,11 @@ var post = new mongoose.Schema({
     type: String,
     required: true
   },
+  pokemonObject: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Pokemon',
+    required: true
+  },
   geo: {type: [Number], index: '2d'},
   time: {
     type: Date,
@@ -135,8 +140,8 @@ post.statics.findNearRecent = function(coords , cb) {
         timeout: {$gt: Date.now()},
         geo: { $nearSphere: coords, $maxDistance: 0.001}
       })
+      .populate('user pokemonObject')
       .lean()
-      .populate('user')
       .sort({timeout: 1})
       // .limit LATER
       .exec(cb);
