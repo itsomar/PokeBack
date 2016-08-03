@@ -222,7 +222,7 @@ var router = express.Router();
           })
         }
       }
-     req.user.notif = req.user.notif.concat(req.body.pokemon)
+      req.user.notif = req.user.notif.concat(req.body.pokemon)
       req.user.save(function(err, user) {
         res.json({
           success: true,
@@ -230,6 +230,32 @@ var router = express.Router();
         })
       })
     })
+
+  router.get('/post/:id', function(req, res, next) {
+    console.log('DID I MAKE IT HERE MANGG')
+    Rating.findOne({user: req.user._id, post: req.params.id}, function(err, rating){
+      if (err) return next(err);
+      if (rating) {
+        console.log('[RATING]', rating)
+        if (rating.type === 'up') {
+          res.json({
+            success: true,
+            rating: 'up'
+          });
+        } else {
+          res.json({
+            success: true,
+            rating: 'down'
+          });
+        } 
+      } else {
+        res.json({
+          success: false,
+          rating: 'none'
+        });
+      }
+    });
+  });
 
   router.post('/post/:id', function(req, res, next) {
     Post.findById(req.params.id, function(err, post) {
