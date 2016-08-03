@@ -14,12 +14,21 @@ var routes = require('./routes/index');
 var models = require('./models/models');
 var User = models.User;
 var routes = require('./routes');
+var IS_DEV = app.get('env') === 'development';
 
 // Make sure we have all required env vars// to confusing, unpredictable errors later.
 ['SECRET', 'MONGODB_URI'].forEach(function(el) {
   if (!process.env[el])
     throw new Error("Missing required env var " + el);
 });
+
+if (!IS_DEV) {
+  require('fs').writeFile(path.join(__dirname + 'Certificates.p12'),
+    new Buffer(process.env.CERT, 'base64'), (err) => {
+    if (err) throw new Error("Unable to write Certificates file.");
+    console.log("Certificates file written.");
+  });
+}
 
 const exec = require('child_process').exec;
 
@@ -47,7 +56,6 @@ exec('parse-dashboard --appId PokeParse --masterKey '
 })
 
 var app = express();
-var IS_DEV = app.get('env') === 'development';
 
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
