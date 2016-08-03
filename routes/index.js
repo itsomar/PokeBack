@@ -337,7 +337,25 @@ var router = express.Router();
       if (err) return next(err);
       if (posts.length === 0) {return res.json({success: true, feed: []})}
       console.log('[INSIDE IF STTEMME')
-      posts.map(function(post, i) {
+      // var notif = req.user.notif.filter(function(item) {
+      //   if(item === "Uncommon") {
+      //      return item
+      //   }
+      //   else if(item === "Rare") {
+      //      return item
+      //   }
+      //   else if(item === "Super Rare") {
+      //      return item
+      //   } else {
+      //     return null
+      //   }
+      // })
+      // if(notif) {
+      //   var postnotif = posts.filter(function(item) {
+      //     return item.pokemonObject.rarity =
+      //   })
+      // }
+       posts.map(function(post, i) {
         console.log("INSIDE MAP");
         post.location = {}
         post.location.latitude = post.geo[1];
