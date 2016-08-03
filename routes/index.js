@@ -235,9 +235,7 @@ var router = express.Router();
           $nearSphere: [req.body.longitude,req.body.latitude],
           $maxDistance: 0.001
         },
-        notif: {
-          $elemMatch: req.body.pokemon
-        }
+        notif: req.body.pokemon
       });
     }).then(users => {
         console.log("NEARBY USERS DETECTED", users);
