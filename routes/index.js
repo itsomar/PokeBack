@@ -14,7 +14,7 @@ var request = require('request-promise');
 var _ = require('underscore');
 
 var Parse = require('parse/node');
-Parse.initialize("PokeParse");
+Parse.initialize("PokeParse", null, process.env.SECRET);
 Parse.serverURL = "http://pokeconnect.herokuapp.com/parse";
 
 module.exports = function (passport) {
@@ -245,7 +245,7 @@ var router = express.Router();
           data: {
             alert: "A " + req.body.pokemon + " has been spotted near you!"
           }
-        });
+        }, {useMasterKey: true});
     }).catch(err => next(err));
   });
 
@@ -339,7 +339,7 @@ var router = express.Router();
             data: {
               alert: "A " + post.pokemon + " has been spotted near you!"
             }
-          });
+          }, {useMasterKey: true});
         });
       })
       .catch(err => next(err));
