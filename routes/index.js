@@ -78,18 +78,6 @@ var router = express.Router();
   }));
 
   router.post('/register', function(req, res, next) {
-    // if (!req.body.username || !req.body.password || !req.body.confirm) {
-    //   return res.json({
-    //     success: false,
-    //     error: 'Missing fields'
-    //   })
-    // }
-    // if (req.body.password !== req.body.confirm) {
-    //   return res.json({
-    //     success: false,
-    //     error: 'Passwords do not match'
-    //   })
-    // }
 
     var params = _.pick(req.body, ['username', 'password', 'repassword', 'team']);
     if (params.team === ''){
@@ -259,8 +247,8 @@ var router = express.Router();
 
   router.post('/background', function(req, res) {
     console.log("REQBODY", req.body);
-    req.user.latitude = req.body.latitude;
-    req.user.longitude = req.body.longitude
+    req.user.latitude = req.body.location.coords.latitude;
+    req.user.longitude = req.body.location.coords.longitude
     res.send("DOPE")
   })
 
