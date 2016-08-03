@@ -24,10 +24,11 @@ var IS_DEV = app.get('env') === 'development';
     throw new Error("Missing required env var " + el);
 });
 
+var certPath = path.join(__dirname, 'Certificates.p12');
 if (!IS_DEV) {
-  require('fs').writeFile(path.join(__dirname + 'Certificates.p12'),
-    new Buffer(process.env.CERT, 'base64'), (err) => {
-    if (err) throw new Error("Unable to write Certificates file.");
+  certPath = path.join('/tmp' + 'Certificates.p12');
+  require('fs').writeFile(certPath, new Buffer(process.env.CERT, 'base64'), (err) => {
+    if (err) throw new Error("Unable to write Certificates file", err);
     console.log("Certificates file written.");
   });
 }
@@ -42,7 +43,7 @@ var api = new ParseServer({
   serverURL: 'http://localhost:' + (process.env.PORT || 3000) + '/parse',
   push: {
     ios: {
-      pfx: path.join(__dirname, 'Certificates.p12'),
+      pfx: certPath,
       passphrase: '',
       bundleId: 'com.horizons.PokegameDitto',
       production: false
