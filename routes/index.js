@@ -317,8 +317,12 @@ var router = express.Router();
     console.log("Updating user location", req.body);
     req.user.geo = [parseFloat(req.body.longitude), parseFloat(req.body.latitude)];
     req.user.save()
-      .then(user => res.send(user))
+      .then(user => {
+        res.send(user);
+        return true;
+      })
       .then(() => {
+        console.log("Made it here!");
         return Post.find({
           name: {
             $in: req.user.notif
