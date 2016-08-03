@@ -42,7 +42,12 @@ var user = new mongoose.Schema({
   },
   notif: [{
     type: String
-  }]
+  }],
+  token: {
+    type: String,
+    required: true
+  },
+  geo: {type: [Number], index: '2d'}
 });
 
 user.plugin(findOrCreate)
