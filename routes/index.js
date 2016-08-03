@@ -258,8 +258,10 @@ var router = express.Router();
   });
 
   router.post('/background', function(req, res) {
+    console.log("REQBODY", req.body);
     req.user.latitude = req.body.latitude;
     req.user.longitude = req.body.longitude
+    res.send("DOPE")
   })
 
   router.post('/post/:id', function(req, res, next) {
