@@ -247,7 +247,7 @@ var router = express.Router();
             success: true,
             rating: 'down'
           });
-        } 
+        }
       } else {
         res.json({
           success: false,
@@ -256,6 +256,11 @@ var router = express.Router();
       }
     });
   });
+
+  router.post('/background', function(req, res) {
+    req.user.latitude = req.body.latitude;
+    req.user.longitude = req.body.longitude
+  })
 
   router.post('/post/:id', function(req, res, next) {
     Post.findById(req.params.id, function(err, post) {
