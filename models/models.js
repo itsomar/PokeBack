@@ -42,7 +42,12 @@ var user = new mongoose.Schema({
   },
   notif: [{
     type: String
-  }]
+  }],
+  token: {
+    type: String,
+    required: true
+  },
+  geo: {type: [Number], index: '2d'}
 });
 
 user.plugin(findOrCreate)
@@ -85,7 +90,7 @@ gympost.statics.findNearRecent = function(coords , cb) {
   return this.model('Gympost')
       .find({
         timeout: {$gt: Date.now()},
-        geo: { $nearSphere: coords, $maxDistance: 0.001}
+        geo: { $nearSphere: coords, $maxDistance: 0.0017}
       })
       .lean()
       .populate('user')
@@ -138,7 +143,7 @@ post.statics.findNearRecent = function(coords , cb) {
   return this.model('Post')
       .find({
         timeout: {$gt: Date.now()},
-        geo: { $nearSphere: coords, $maxDistance: 0.001}
+        geo: { $nearSphere: coords, $maxDistance: 0.0017}
       })
       .populate('user pokemonObject')
       .lean()
