@@ -2,3 +2,4 @@ node_modules
 process.env
 Certificates.p12
 npm-debug.log
+logs/
