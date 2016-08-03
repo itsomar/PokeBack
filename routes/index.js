@@ -315,7 +315,7 @@ var router = express.Router();
 
   router.post('/background', function(req, res, next) {
     console.log("Updating user location", req.body);
-    req.user.geo = [parseFloat(req.body.longitude), parseFloat(req.body.latitude)];
+    req.user.geo = [parseFloat(req.body.location.longitude), parseFloat(req.body.location.latitude)];
     req.user.save()
       .then(user => {
         res.send(user);
@@ -328,7 +328,7 @@ var router = express.Router();
             $in: req.user.notif
           },
           geo: { 
-            $nearSphere: [req.body.longitude, req.body.latitude],
+            $nearSphere: [req.body.location.longitude, req.body.location.latitude],
             $maxDistance: 0.001
           },
         });
@@ -339,7 +339,7 @@ var router = express.Router();
           Parse.Push.send({
             channels: req.user.username,
             data: {
-              alert: "A " + req.body.pokemon + " has been spotted near you!"
+              alert: "A " + post.pokemon + " has been spotted near you!"
             }
           });
         });
