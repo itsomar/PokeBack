@@ -9,8 +9,13 @@ var Post = models.Post;
 var Gympost = models.Gympost;
 var Rating = models.Rating;
 var Pokemon = models.Pokemon;
+var request = require('request-promise');
 
 var _ = require('underscore');
+
+var Parse = require('parse/node');
+Parse.initialize("PokeParse");
+Parse.serverURL = "http://pokeconnect.herokuapp.com/parse";
 
 module.exports = function (passport) {
 var router = express.Router();
@@ -91,7 +96,8 @@ var router = express.Router();
     //   })
     // }
 
-    var params = _.pick(req.body, ['username', 'password', 'repassword', 'team']);
+    var params = _.pick(req.body, ['username', 'password', 'repassword', 'team', 'token']);
+
     if (params.team === ''){
         return res.status(400).json({
           success: false,
@@ -116,6 +122,12 @@ var router = express.Router();
         error: 'Passwords do not match'
       })
     }
+    if (!params.token) {
+      return res.status(400).json({
+        success: false,
+        error: 'No device token supplied'
+      })
+    }
     bcrypt.genSalt(10, function(err, salt) {
       console.log("salt err", err);
       bcrypt.hash(params.password, salt, function(err, hash) {
@@ -124,24 +136,50 @@ var router = express.Router();
         params.password = hash;
         console.log("user err", err)
                 // if there's an error, finish trying to authenticate (auth failed)
-        new User({
-          username: params.username,
-          password: params.password,
-          team: params.team
-        }).save(function(error, user){
-          if(error){
-            return res.status(400).json({
-              success: false,
-              error: "Username already exists"
-            })
+        request({
+          uri: Parse.serverURL + "/installations?where=" 
+              + encodeURIComponent(JSON.stringify({ deviceToken: params.token })),
+          headers: {
+            'X-Parse-Application-Id': 'PokeParse',
+            'X-Parse-Master-Key': process.env.SECRET
           }
-            else{
-              return res.json({
-                success: true,
-                user: user
+        }).then(response => {
+          var parsed = JSON.parse(response);
+          console.log(parsed.results[0])
+          request({
+            uri: Parse.serverURL + "/installations/" + parsed.results[0].objectId,
+            method: 'PUT',
+            headers: {
+              'X-Parse-Application-Id': 'PokeParse',
+              'X-Parse-Master-Key': process.env.SECRET,
+              'Content-Type': 'application/json'
+            },
+            form: {
+              "channels": [].concat(parsed.results[0].channels, params.username)
+            }
+          })
+        }).then(response => {
+          console.log("Parse succeeded", response);
+          new User({
+            username: params.username,
+            password: params.password,
+            team: params.team,
+            token: params.token
+          }).save(function(error, user){
+            if(error){
+              return res.status(400).json({
+                success: false,
+                error: "Username already exists"
               })
             }
-        });
+              else{
+                return res.json({
+                  success: true,
+                  user: user
+                })
+              }
+          });
+        }).catch(err => next(err));
       });
     });
   });
@@ -185,14 +223,31 @@ var router = express.Router();
       time: new Date(),
       geo: [req.body.longitude,req.body.latitude],
       timeout: new Date().getTime() + (30 * 60 * 1000)
-    }).save(function(err,post) {
-      console.log("Saving attempted: ", err, post);
-      if (err) return next(err);
-      res.json({
+    }).save().then((post) => {
+      console.log("Saving succeeded: ", post);
+      return res.json({
         success: true,
         post: post
-      })
-    });
+      });
+    }).then(() => {
+      return User.find({
+        geo: { 
+          $nearSphere: [req.body.longitude,req.body.latitude],
+          $maxDistance: 0.001
+        },
+        notif: {
+          $elemMatch: req.body.pokemon
+        }
+      });
+    }).then(users => {
+        if (users.length === 0) return;
+        return Parse.Push.send({
+          channels: users.map(user => user.username),
+          data: {
+            alert: "A " + req.body.pokemon + " has been spotted near you!"
+          }
+        });
+    }).catch(err => next(err));
   });
 
   router.post('/gympost', function(req, res, next) {
@@ -257,11 +312,33 @@ var router = express.Router();
     });
   });
 
-  router.post('/background', function(req, res) {
-    console.log("REQBODY", req.body);
-    req.user.latitude = req.body.latitude;
-    req.user.longitude = req.body.longitude
-    res.send("DOPE")
+  router.post('/background', function(req, res, next) {
+    console.log("Updating user location", req.body);
+    req.user.geo = [parseFloat(req.body.longitude), parseFloat(req.body.latitude)];
+    req.user.save()
+      .then(user => res.send(user))
+      .then(() => {
+        return Post.find({
+          name: {
+            $in: req.user.notif
+          },
+          geo: { 
+            $nearSphere: [req.body.longitude, req.body.latitude],
+            $maxDistance: 0.001
+          },
+        });
+      })
+      .then(posts => {
+        posts.forEach(post => {
+          Parse.Push.send({
+            channels: req.user.username,
+            data: {
+              alert: "A " + req.body.pokemon + " has been spotted near you!"
+            }
+          });
+        });
+      })
+      .catch(err => next(err));
   })
 
   router.post('/post/:id', function(req, res, next) {
