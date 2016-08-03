@@ -238,7 +238,7 @@ var router = express.Router();
         notif: {
           $elemMatch: req.body.pokemon
         }
-      }).elemMatch("");
+      });
     }).then(users => {
         console.log("NEARBY USERS DETECTED", users);
         if (users.length === 0) return;
