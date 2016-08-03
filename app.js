@@ -14,6 +14,8 @@ var routes = require('./routes/index');
 var models = require('./models/models');
 var User = models.User;
 var routes = require('./routes');
+
+var app = express();
 var IS_DEV = app.get('env') === 'development';
 
 // Make sure we have all required env vars// to confusing, unpredictable errors later.
@@ -54,8 +56,6 @@ exec('parse-dashboard --appId PokeParse --masterKey '
       if (err) return console.error(`Failed to start Parse Dashboard process: ${err}`);
       console.log("Started Parse Dashboard, ready.");
 })
-
-var app = express();
 
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
