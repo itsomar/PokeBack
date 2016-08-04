@@ -155,7 +155,7 @@ var router = express.Router();
               'Content-Type': 'application/json'
             },
             form: {
-              "channels": [].concat(parsed.results[0].channels, params.username)
+              "channels": ["global", params.username]
             }
           })
         }).then(response => {
@@ -243,7 +243,7 @@ var router = express.Router();
         return Parse.Push.send({
           channels: users.map(user => user.username),
           data: {
-            alert: "A " + req.body.pokemon + " has been spotted near you!"
+            alert: req.body.pokemon + " has been spotted near you!"
           }
         }, {useMasterKey: true});
     }).catch(err => next(err));
@@ -337,7 +337,7 @@ var router = express.Router();
           Parse.Push.send({
             channels: req.user.username,
             data: {
-              alert: "A " + post.pokemon + " has been spotted near you!"
+              alert: post.pokemon + " has been spotted near you!"
             }
           }, {useMasterKey: true});
         });
