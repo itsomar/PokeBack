@@ -192,7 +192,7 @@ var router = express.Router();
   });
 
   router.get('/login/success', function(req, res) {
-    var user = _.pick(req.user, 'username', '_id');
+    var user = _.pick(req.user, 'username', '_id', 'team');
     console.log("NOTIFFF", req.user.notif);
     res.json({
       success: true,
