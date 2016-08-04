@@ -14,7 +14,7 @@ var request = require('request-promise');
 var _ = require('underscore');
 
 var Parse = require('parse/node');
-Parse.initialize("PokeParse");
+Parse.initialize("PokeParse", null, process.env.SECRET);
 Parse.serverURL = "http://pokeconnect.herokuapp.com/parse";
 
 module.exports = function (passport) {
@@ -143,7 +143,7 @@ var router = express.Router();
               'Content-Type': 'application/json'
             },
             form: {
-              "channels": [].concat(parsed.results[0].channels, params.username)
+              "channels": ["global", params.username]
             }
           })
         }).then(response => {
@@ -223,18 +223,17 @@ var router = express.Router();
           $nearSphere: [req.body.longitude,req.body.latitude],
           $maxDistance: 0.0017
         },
-        notif: {
-          $elemMatch: req.body.pokemon
-        }
+        notif: req.body.pokemon
       });
     }).then(users => {
+        console.log("NEARBY USERS DETECTED", users);
         if (users.length === 0) return;
         return Parse.Push.send({
           channels: users.map(user => user.username),
           data: {
-            alert: "A " + req.body.pokemon + " has been spotted near you!"
+            alert: req.body.pokemon + " has been spotted near you!"
           }
-        });
+        }, {useMasterKey: true});
     }).catch(err => next(err));
   });
 
@@ -321,10 +320,14 @@ var router = express.Router();
 
   router.post('/background', function(req, res, next) {
     console.log("Updating user location", req.body);
-    req.user.geo = [parseFloat(req.body.longitude), parseFloat(req.body.latitude)];
+    req.user.geo = [parseFloat(req.body.location.coords.longitude), parseFloat(req.body.location.coords.latitude)];
     req.user.save()
-      .then(user => res.send(user))
+      .then(user => {
+        res.send(user);
+        return true;
+      })
       .then(() => {
+        console.log("Made it here!");
         return Post.find({
           name: {
             $in: req.user.notif
@@ -332,17 +335,18 @@ var router = express.Router();
           geo: {
             $nearSphere: [req.body.longitude, req.body.latitude],
             $maxDistance: 0.0017
-          },
+          }
         });
       })
       .then(posts => {
+        console.log("NEARBY POSTS DETECTED", posts);
         posts.forEach(post => {
           Parse.Push.send({
             channels: req.user.username,
             data: {
-              alert: "A " + req.body.pokemon + " has been spotted near you!"
+              alert: post.pokemon + " has been spotted near you!"
             }
-          });
+          }, {useMasterKey: true});
         });
       })
       .catch(err => next(err));
