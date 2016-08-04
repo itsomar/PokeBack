@@ -257,7 +257,6 @@ var router = express.Router();
 
   router.post('/notif', function(req, res) {
     console.log("RE USER NOT NOW", req.user.notif);
-    if(req.body.pokemon) {
       for(var i = 0; i < req.user.notif.length; i++) {
         console.log("INSIDE FOR LOOP GEORGE");
         if(req.body.pokemon === req.user.notif[i]) {
@@ -268,14 +267,31 @@ var router = express.Router();
       }
       req.user.notif = req.user.notif.concat(req.body.pokemon)
       req.user.save(function(err, user) {
+        if (err) console.log("FUK", err); return err;
         res.json({
           success: true,
-          notif: user.notif,
-          on: true
+          notif: user.notif
         })
       })
-    }
     })
+
+    router.get('/notif/remove', function(req, res, next) {
+      var index = req.user.notif.indexOf(req.query.pokemon);
+      console.log('[BEFORE]', req.user.notif);
+      req.user.notif.splice(index, 1);
+      console.log('[AFTER]', req.user.notif)
+      req.user.save(function(err, user) {
+        if (err) console.log('[NOTIF ERROR]', err);
+        console.log('[SAVED]', req.user.notif)
+        console.log('[SAVED USER]', req.user.notif)
+
+        res.json({
+          success: true,
+          notif: req.user.notif
+        });
+      });
+    });
+
 
   router.get('/post/:id', function(req, res, next) {
     console.log('DID I MAKE IT HERE MANGG')
@@ -436,7 +452,7 @@ var router = express.Router();
       console.log('[INSIDE GEORGEEE]')
       console.log("ERRRRRRR", err);
       if (err) return next(err);
-      if (posts.length === 0) {return res.json({success: true, feed: []})}
+      if (posts.length === 0) {return res.json({success: true, feed: [], notif: req.user.notif})}
       console.log('[INSIDE IF STTEMME')
       // var notif = req.user.notif.filter(function(item) {
       //   if(item === "Uncommon") {
@@ -469,7 +485,8 @@ var router = express.Router();
             console.log(posts);
             res.json({
               success: true,
-              feed: posts
+              feed: posts,
+              notif: req.user.notif
             });
           }
           return post
