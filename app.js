@@ -46,7 +46,7 @@ var api = new ParseServer({
       pfx: certPath,
       passphrase: '',
       bundleId: 'com.horizons.PokegameDitto',
-      production: false
+      production: IS_DEV
     }
   }
 });
